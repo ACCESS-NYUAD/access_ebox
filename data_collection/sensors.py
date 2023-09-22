@@ -1,5 +1,5 @@
 '''
-Copyright (C) 2022 Francesco Paparella, Pedro Velasquez
+Copyright (C) 2022 Francesco Paparella, Pedro Velasquez, Bimarsha Adhikari 
 
 This file is part of "ACCESS IOT Stations".
 
@@ -20,7 +20,8 @@ You should have received a copy of the GNU General Public License along with
 ##########
 
 import ACCESS_station_lib as access
-import busio
+from adafruit_extended_bus import ExtendedI2C as I2C
+import json
 
 ##########
 
@@ -47,39 +48,51 @@ except Exception:
 # list to keep all sensors
 sensors = []
 
-# initialize pm sensors
-ports = ['/dev/ttyAMA0', '/dev/ttyAMA1']
+# retreive the sensor configuration from the station.config file
+with open("station.config") as station:
+    station_config = json.loads(station.read()) 
 
-for i in range(2):
-    try:
-        sensors.append(access.NEXTPMbeseecher(port=ports[i]))
-    except Exception as e:
-        sensors.append(access.ErrorBeseecher('particulate_matter',
-                                             'nextpm',
-                                             str(e)))
+for sensor in station_config:
+    if sensor == "particulate_matter":
+        for pm_sensor in station_config[sensor]:
+            if "ports" in pm_sensor:
+                for port in pm_sensor["ports"]:
+                    try:
+                        sensors.append(access.NEXTPMbeseecher(port=port))
+                    except Exception as e:
+                        sensors.append(access.ErrorBeseecher(
+                            'particulate_matter', 'nextpm', str(e)))
+            elif "i2c_buses" in pm_sensor:
+                sens_type = pm_sensor["type"]
+                for i2c_bus in pm_sensor["i2c_buses"]:
+                    i2c_num = i2c_bus[0]
+                try:
+                    exec(f"sensors.append(access.{sens_type.upper()}beseecher(i2c_bus_number=i2c_num))")
 
-# the air sensors need an I2C object
-i2c = busio.I2C()
+                except Exception as e:
+                    error_msg = str(e)
+                    sensors.append(access.ErrorBeseecher(
+                        sensor, f'{sens_type} {i2c_num}', error_msg))
 
-# initialize air sensors
-# bme
-try:
-    sensors.append(access.BME280beseecher(i2c=i2c))
-except Exception as e:
-    error_msg = str(e)
-    sensors.append(access.ErrorBeseecher('air_sensor', 'bme280', error_msg))
-# ms8607
-try:
-    sensors.append(access.MS8607beseecher(i2c=i2c))
-except Exception as e:
-    error_msg = str(e)
-    sensors.append(access.ErrorBeseecher('air_sensor', 'ms8607', error_msg))
-# scd30
-try:
-    sensors.append(access.SCD30beseecher(i2c=i2c))
-except Exception as e:
-    error_msg = str(e)
-    sensors.append(access.ErrorBeseecher('co2_sensor', 'scd30', error_msg))
+    if sensor in ["air_sensor", "co2_sensor"]:
+        for sens in station_config[sensor]:
+            sens_type = sens["type"]
+            for i2c_bus in sens["i2c_buses"]:
+                i2c_num = i2c_bus[0]
+                if len(i2c_bus) == 2:
+                    addr = i2c_bus[1]
+                try:
+                    if len(i2c_bus) == 2:
+                        exec(
+                            f"sensors.append(access.{sens_type.upper()}beseecher(i2c=I2C(i2c_num), address = addr))")
+                    else:
+                        exec(
+                            f"sensors.append(access.{sens_type.upper()}beseecher(i2c=I2C(i2c_num)))")
+
+                except Exception as e:
+                    error_msg = str(e)
+                    sensors.append(access.ErrorBeseecher(
+                        sensor, f'{sens_type} {i2c_num} {addr}', error_msg))
 
 '''
 set up indeces for all sensors
