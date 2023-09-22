@@ -1,5 +1,5 @@
 '''
-Copyright (C) 2022 Francesco Paparella, Pedro Velasquez
+Copyright (C) 2022 Francesco Paparella, Pedro Velasquez, Bimarsha Adhikari
 
 This file is part of "ACCESS IOT Stations".
 
@@ -19,10 +19,11 @@ You should have received a copy of the GNU General Public License along with
 
 ##########
 
-import sensors as sens
-import packages.modules as modules
-import json
-import os
+import threading
+import sensors as sens 
+from ACCESS_station_lib import Beseecher 
+import time
+import json 
 
 ##########
 
@@ -38,33 +39,41 @@ to start collecting data
 '''
 
 ##########
+data_saved = {} 
+threads = [] 
 
+def measure(sensor): 
+    global data_saved 
+
+    try: 
+        if sensor.SENSOR == "particulate_matter": 
+            data = sensor.measurePM_10_seconds()
+        else: 
+            data = sensor.measure() 
+        print("Testing", sensor.SENSOR, sensor.index) 
+        if sensor in data_saved: 
+            data_saved[sensor].append(data)  
+        else: 
+            data_saved[sensor] = [data]
+    except: 
+        print(f"Error with {sensor}") 
 
 def main():
-    try:
-        print('Testing Sensors')
-        for i in range(len(sens.sensors)):
-            print('Testing', i)
-            print(sens.sensors[i].measure())
-        print()
+    global threads 
+    start = time.time() 
+    for sensor in sens.sensors: 
+        thread = threading.Thread(target = measure, args=(sensor,)) 
+        threads.append(thread) 
+        thread.start() 
 
-        print('Testing GPS')
-        print(sens.gps.fix())
-        print()
+    for thread in threads: 
+        thread.join() 
 
-    except Exception as e:
-        print('Error connecting to sensors')
-        modules.log('Testing sensors failed, must check connection')
-        raise e
-
-    # create config file
-    sensors_dict = {}
-    for sensor in sens.sensors:
-        sensors_dict[sensor.SENSOR] = sensors_dict.get(sensor.SENSOR, 0) + 1
-
-    with open(os.path.join(modules.HOME, 'station.config'), 'w') as f:
-        json.dump(sensors_dict, f, indent=4)
-
+    end = time.time() 
+    print("\nTime taken:", end-start,"\n") 
+    for key in data_saved: 
+        for data in data_saved[key]:  
+            print(f"{key.SENSOR}{key.index}: \n{json.dumps(data, indent=4)}\n") 
     return 0
 
 
