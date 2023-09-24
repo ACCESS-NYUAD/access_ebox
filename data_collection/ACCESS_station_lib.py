@@ -193,7 +193,7 @@ class GPSbeseecherGPIO:
                 try:
                     if q.sentence_type == 'GGA':
                         if q.gps_qual is not None and q.gps_qual > 0:
-                            gpsfix['time'] = q.timestamp.isoformat()
+                            gpsfix['time'] = q.timestamp.isoformat().split('+')[0]
                             gpsfix['latitude'] = q.latitude
                             gpsfix['longitude'] = q.longitude
                             gpsfix['lat_dir'] = q.lat_dir
@@ -558,7 +558,8 @@ class BME280beseecher(Beseecher):
                  i2c: busio.I2C = None,
                  mode: int = 0x01,
                  overscan: int = 0x05,
-                 index: int = 0
+                 index: int = 0, 
+                 address: int = 0x77 
                  ) -> None:
         '''
         Initializes sensor using the i2c bus of the raspberry pi
@@ -579,7 +580,7 @@ class BME280beseecher(Beseecher):
             i2c = busio.I2C()
 
         self.i2c = i2c
-        self.sensor = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+        self.sensor = adafruit_bme280.Adafruit_BME280_I2C(i2c, address)
 
         # set mode to force if invalid code passed
         if mode not in self.MODES:
@@ -787,7 +788,7 @@ class SCD30beseecher(Beseecher):
         '''
         Initializes sensor using the i2c bus of the raspberry pi
         @param i2c -> busio.I2C() for the raspberry pi
-        @param index index in array of air_sensors this sensor should take
+        @param index -> index in array of air_sensors this sensor should take
         '''
 
         super().__init__('co2_sensor', 'scd30', index)
