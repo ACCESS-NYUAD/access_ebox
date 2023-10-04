@@ -393,6 +393,7 @@ Other dependencies
  |-- data_collection.py
  |-- diagnostics.py
  |-- sender.py
+ |-- station_configuration.py 
  |-- sensors.py 
  |-- station_id.py
  |-- test.py
@@ -423,7 +424,9 @@ All files inside the boot folder will setup the Access Station.
 * `cert.pem`: self-signed certificate used by the server for https.
 * `data_collection.py`: collects information from the sensors every 10 minutes.
 * `sender.py`: sends data collected to the receiver server.
-* `sensors.py`: initializes sensors, to be configured/modified depending on which sensors are connected where.
+* `station_configuration.py`: sets up sensor configuration; should be modified to indicate sensors and their connections
+* `station.config`: json object created automatically by `station_configuration.py`; used by `sensors.py` to initilize sensors; can be directly modified as per need 
+* `sensors.py`: initializes sensors based on the `station.config` file
 * `station_id.py`: contains the Pi's unique 16-digit hexadecimal ID and the station number, must be set manually.
     
     ```python
@@ -431,14 +434,7 @@ All files inside the boot folder will setup the Access Station.
         secret = '4820FA34CB9D873E'
         station_num = '3' # must be as string
     ```
-
-* `station.config`: json object detailing how many of each sensor connected to the station (not including GPS). This file is automatically created after running `test.py`. A sample can be seen below:
-    ```json
-    {
-        "particulate_matter": 2,
-        "air_sensor": 2
-    }
-    ```
+     
 * `test.py`: tests to see if all the connections to the hardware are working well. Sets up the configuration file for the station.
 
 
