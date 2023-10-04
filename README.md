@@ -393,7 +393,8 @@ Other dependencies
  |-- data_collection.py
  |-- diagnostics.py
  |-- sender.py
- |-- station_configuration.py 
+ |-- station_configuration.py
+ |-- station.config  
  |-- sensors.py 
  |-- station_id.py
  |-- test.py
