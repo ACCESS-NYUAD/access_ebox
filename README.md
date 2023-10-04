@@ -391,6 +391,7 @@ Other dependencies
  |-- data_collection.py
  |-- diagnostics.py
  |-- sender.py
+ |-- station_configuration.py 
  |-- sensors.py 
  |-- station_id.py
  |-- test.py
@@ -421,7 +422,8 @@ All files inside the boot folder will setup the Access Station.
 * `cert.pem`: self-signed certificate used by the server for https.
 * `data_collection.py`: collects information from the sensors every 10 minutes.
 * `sender.py`: sends data collected to the receiver server.
-* `sensors.py`: initializes sensors, to be configured/modified depending on which sensors are connected where.
+* `station_configuration.py`: sets up sensor configuration; should be modified to indicate sensors and their connections 
+* `sensors.py`: initializes sensors based on the station configuration file; does not need to be modified. 
 * `station_id.py`: contains the Pi's unique 16-digit hexadecimal ID and the station number, must be set manually.
     
     ```python
