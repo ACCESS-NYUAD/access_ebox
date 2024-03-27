@@ -147,7 +147,7 @@ def main():
         return -1
 
     # construct headers for https request
-    headers = {'pi_id': station.secret, 'pi_num': station.station_num}
+    headers = {'pi-id': station.secret, 'pi-num': station.station_num}
 
     # auth pi to send data
     # success -> response = '301 <rand_str>'
@@ -166,7 +166,7 @@ def main():
     modules.log('Sending files')
     for send_file in dir_list:
         # calculate files left to send
-        headers['num_files'] = str(num_files)
+        headers['num-files'] = str(num_files)
 
         # get hash256 of file
         headers['checksum'] = calc_hash256(send_file, FOLDER)

@@ -41,7 +41,7 @@ the error.
 
 # try building gps, GPS sensor is critical point of failure for system
 try:
-    gps = access.GPSbeseecherGPIO()  # only 1 GPS
+    gps = access.GPSbeseecher(port="/dev/ttyACM0")  # only 1 GPS
 except Exception:
     gps = access.ErrorBeseecher('gps', 'gps', 'Error initializing GPS at boot')
 

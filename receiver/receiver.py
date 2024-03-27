@@ -214,10 +214,10 @@ def register() -> str:
     sensors config file which will be in the request
     '''
     # collect headers
-    auth = request.headers.get('pi_id', None)
+    auth = request.headers.get('pi-id', None)
     email = request.headers.get('email', None)
     checksum = request.headers.get('checksum', None)
-    datafile = request.files.get('sensor_config', None)
+    datafile = request.files.get('sensor-config', None)
 
     # check if all requirements are valid
     rsp = authenticate_request(auth, [email, checksum], check_files=True,
@@ -251,7 +251,7 @@ def authenticate() -> str:
     The temporary url created will have the form "/upload/<rand_str>"
     '''
     # collect headers from request
-    auth = request.headers.get('pi_id', None)
+    auth = request.headers.get('pi-id', None)
 
     rsp = authenticate_request(auth)
     if rsp != '':
@@ -282,14 +282,14 @@ def get_data(url: str) -> str:
     '''
 
     # collect headers and files for authentication
-    auth = request.headers.get('pi_id', None)
+    auth = request.headers.get('pi-id', None)
     checksum = request.headers.get('checksum', None)
-    station_num = request.headers.get('pi_num', None)
+    station_num = request.headers.get('pi-num', None)
     # collect files
-    datafile = request.files.get('sensor_data_file', None)
+    datafile = request.files.get('sensor-data-file', None)
     # check how many remaining files
     # all arguments are in string form
-    num_files = request.headers.get('num_files', '1')
+    num_files = request.headers.get('num-files', '1')
 
     # authenticate all information received is okay
     rsp = authenticate_request(auth, [checksum, station_num], check_files=True,
