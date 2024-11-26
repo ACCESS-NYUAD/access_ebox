@@ -438,8 +438,66 @@ All files inside the boot folder will setup the Access Station.
      
 * `test.py`: tests to see if all the connections to the hardware are working well. Sets up the configuration file for the station.
 
+### Setting the Station ID
+# Device Identification Format
 
-### Setting Up
+This format standardizes the identification of devices based on their configuration and deployment details. Each identifier is structured as follows:
+
+## Format
+```
+PPCY-AA-BXXX-DDMMYY
+```
+
+### Breakdown of the Format
+- **PP (Power Source)**: Identifies the power source of the device:
+  - `RP`: Raspberry Pi power adaptor
+  - `SP`: Solar power system
+- **C (Connectivity Type)**: Specifies the type of connectivity used:
+  - `W`: Wi-Fi
+  - `G`: GSM
+- **Y (Number of Sensor Types)**: Indicates the number of different sensor types used.
+  - Example: `5` for 5 sensor types such as BME280, NEXT PM, CO2, GPS, etc.
+- **AA (Sensor Count)**: The total number of sensors on the device.
+  - Example: `06` for a device with 6 sensors.
+- **BXXX (Box Number)**: A unique identifier assigned to each device.
+  - Example: `B006` for box number 6.
+- **DDMMYY (Deployment Date)**: Represents the day, month, and year of deployment or registration.
+  - Example: `071024` for deployment on **7th October 2024**.
+
+---
+
+## Example
+```
+SPW5-06-B006-071024
+```
+
+### Explanation
+- **SP**: Solar power system
+- **W**: Wi-Fi connectivity
+- **5**: 5 different sensor types
+- **06**: A total of 6 sensors
+- **B006**: Box number 6
+- **071024**: Deployment date (7th October 2024)
+
+---
+
+### Additional Example
+```
+RPW4-07-B007-071024
+```
+- **RP**: Raspberry Pi power adaptor
+- **W**: Wi-Fi connectivity
+- **4**: 4 different sensor types
+- **07**: A total of 7 sensors
+- **B007**: Box number 7
+- **071024**: Deployment date (7th October 2024)
+
+---
+
+This format ensures that each device is uniquely identified and standardized based on its configuration and deployment details.
+
+
+### Setting Up the IoT Box
 
 This guide will follow the steps from boot up to operation required to set up the Access Station.
 
@@ -449,7 +507,8 @@ This guide will follow the steps from boot up to operation required to set up th
         "config": true,
         "id": "056F0BC2E9812C0A",
         "stationary": true,
-        "station_num": 3
+        "station_num": 3,
+        "email": "example@mail.com"
     }
     ```
     Stationary indicates whether this station will always collect data from the same location or will be moving.
